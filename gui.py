@@ -10,6 +10,7 @@ from recsys import get_recoms, imdb
 from rapidfuzz import process
 from difflib import SequenceMatcher
 from heapq import nlargest as _nlargest
+from flowlayout import FlowLayout
 
 # Set a search mode, fuzzy is more precise and guesses better and difflib is much faster
 SEARCH_MODE = 'fuzzy'
@@ -67,7 +68,7 @@ class SelectedTitleButton(QPushButton):
 
 
     def mousePressEvent(self, event):
-        print('Removed')
+        # print('Removed')
         self.setParent(None)
 
     def enterEvent(self, QEvent):
@@ -235,7 +236,7 @@ class App(QMainWindow):
         self.optionWidget.setLayout(self.tooltipAreaLayout)
 
         #
-        self.selected_options_layout = QHBoxLayout()
+        self.selected_options_layout = FlowLayout()
         # self.selected_options_layout.setAlignment()
         # a = QPushButton('{} ❌'.format(1))
         # a.setFlat(True)
@@ -247,13 +248,13 @@ class App(QMainWindow):
         # self.selected_options_layout.addWidget(a)
 
         self.selected_options_layout.addWidget(SelectedTitleButton(text='11234324342241'))
-        # self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
-        # self.selected_options_layout.addWidget(SelectedTitleButton(text='2324'))
-        # self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
-        # self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
-        # self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
-        # self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
-        # self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
+        self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
+        self.selected_options_layout.addWidget(SelectedTitleButton(text='2324'))
+        self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
+        self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
+        self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
+        self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
+        self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
         self.selected_options_layout.addWidget(SelectedTitleButton(text='342432123421431234'))#
         self.selected_options_layout.addItem(QSpacerItem(20, 10, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))
         # self.selected_options_widgets = QWidget()
