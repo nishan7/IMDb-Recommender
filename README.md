@@ -14,16 +14,18 @@ It uses PyQt5 for the GUI interfaces.
 <ul>Gui interface to interact</ul>
 <ul>Recommended movies have link to google/imdb </ul>
 
+
+## How to run
+```
+pip install -r requirements.txt
+python gui.py
+```
+
+##
 ### Screenshot
 
 <img src="https://github.com/nishan7/IMDb-Recommender/blob/master/demo.jpg" alt="sample" width="500"/>
 <img src="https://github.com/nishan7/IMDb-Recommender/blob/master/demo_series.jpg" alt="sample2" width="500"/>
 
 
-##
-```
-python gui.py
-```
-
-##
 
