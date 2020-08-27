@@ -15,6 +15,8 @@ It uses PyQt5 for the GUI interfaces.
 <ul>Recommended movies have link to google/imdb </ul>
 
 ### Screenshot
+![Sample1](https://github.com/nishan7/IMDb-Recommender/blob/master/demo.jpg)
+![Sample1](https://github.com/nishan7/IMDb-Recommender/blob/master/demo_series.jpg)
 
 ##
 ```
