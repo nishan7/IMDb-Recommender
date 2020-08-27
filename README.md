@@ -17,8 +17,8 @@ It uses PyQt5 for the GUI interfaces.
 ### Screenshot
 
 <img src="https://github.com/nishan7/IMDb-Recommender/blob/master/demo.jpg" alt="sample" width="500"/>
-<img src="https://github.com/nishan7/IMDb-Recommender/blob/master/demo_series.jpg.jpg" alt="sample2" width="500"/>
-![Sample1](https://github.com/nishan7/IMDb-Recommender/blob/master/demo_series.jpg)
+<img src="https://github.com/nishan7/IMDb-Recommender/blob/master/demo_series.jpg" alt="sample2" width="500"/>
+
 
 ##
 ```
