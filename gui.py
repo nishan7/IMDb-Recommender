@@ -3,7 +3,7 @@ from PyQt5.QtGui import QFont
 
 from PyQt5 import QtWidgets, QtCore, QtGui, Qt
 from PyQt5.QtWidgets import (QLabel, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QApplication,
-                             QLineEdit, QScrollArea, QPushButton, QSizePolicy)
+                             QLineEdit, QScrollArea, QPushButton, QSizePolicy, QRadioButton, QButtonGroup)
 import urllib
 import webbrowser
 from recsys import get_recoms, imdb
@@ -55,21 +55,23 @@ def get_best_matches(word, possibilities, n=5, cutoff=0.5):
         return [id for name, score, id in matches]
 
 
+# It keeps track of all the titles which are selected and mement to be sent to the recomm system.
+selected_titles_list = []
+
+
 class SelectedTitleButton(QPushButton):
     # Creating a custem Label that allow to to be clicked and remove itself when clicked
-    def __init__(self, text=''):
-        QPushButton.__init__(self,"{} ❌".format(text) )
-        # self.setMaximumWidth(60)
-        # self.setMaximumHeight(30)
-        # width = self.fontMetrics().boundingRect(text).width() + 30
-        # self.setMaximumWidth(width)
+    def __init__(self, text, id):
+        QPushButton.__init__(self, "{} ❌".format(text))
         self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed))
         self.setFlat(True)
-
+        selected_titles_list.append(id)
+        self.title_id = id
 
     def mousePressEvent(self, event):
         # print('Removed')
         self.setParent(None)
+        selected_titles_list.remove(self.title_id)
 
     def enterEvent(self, QEvent):
         self.setStyleSheet("border:2px solid #ff3d38;")
@@ -80,14 +82,16 @@ class SelectedTitleButton(QPushButton):
         self.setStyleSheet('')
 
 
-
-
 class ClickableLabel(QLabel):
     # Creating a cutom label class that allows us click it, for the options as searched string
+
+    clicked = QtCore.pyqtSignal()
+
     def __init__(self, text='', font_size=13, bold=False, background=True, underline=True):
         QLabel.__init__(self, text=text)
         self.link = "http://www.example.com"
-        self.text = text
+        # self.text = text
+        self.title_id= 0
         self.setContentsMargins(10, 5, 5, 5)
 
         # Storage data
@@ -113,7 +117,9 @@ class ClickableLabel(QLabel):
         self.setStyleSheet(self.style_sheet)
 
     def mousePressEvent(self, event):
-        pass
+        # print(self.text)
+        self.clicked.emit()
+        QLabel.mousePressEvent(self, event)
 
     def enterEvent(self, QEvent):
         f = QFont()
@@ -165,12 +171,13 @@ class Recommendations(QtCore.QThread):
     # Threaded Class used get recommendations
     recom_signal = QtCore.pyqtSignal(list)
 
-    def request(self, ids):
+    def request(self, ids, mode):
         self.ids = ids
+        self.mode = mode #Series or movies
         self.start()
 
     def run(self):
-        recoms = get_recoms(self.ids)
+        recoms = get_recoms(self.ids,self.mode)
         self.recom_signal.emit(recoms)
 
 
@@ -215,6 +222,24 @@ class App(QMainWindow):
         self.searchArea.addWidget(QLabel(text='Search'))
         self.searchArea.addWidget(self.search)
 
+        self.recom_movies = QRadioButton('Movies')
+        self.recom_series = QRadioButton('Series')
+
+        self.recom_movies.setChecked(True)
+        self.recom_movies_or_series  = QButtonGroup()
+        self.recom_movies_or_series.setExclusive(True)
+
+
+        self.recom_movies_or_series.addButton(self.recom_movies)
+        self.recom_movies_or_series.addButton(self.recom_series)
+
+        # self.searchArea.addItem(self.recom_movies_or_series)
+        self.searchArea.addWidget(self.recom_movies)
+        self.searchArea.addWidget(self.recom_series)
+
+        self.search_button = QPushButton('Recommend!')
+        self.searchArea.addWidget(self.search_button)
+
         # Layout for option/tooltip Area
         self.optionWidget = QWidget()
 
@@ -224,8 +249,8 @@ class App(QMainWindow):
         option_value1 = ClickableLabel(text='1', background=True, underline=False)
         option_value2 = ClickableLabel(text='2', background=True, underline=False)
         option_value3 = ClickableLabel(text='3', background=True, underline=False)
-        option_value4 = ClickableLabel(text='b', background=True, underline=False)
-        option_value5 = ClickableLabel(text='b', background=True, underline=False)
+        option_value4 = ClickableLabel(text='4', background=True, underline=False)
+        option_value5 = ClickableLabel(text='5', background=True, underline=False)
 
         self.tooltipAreaLayout.addWidget(option_value1)
         self.tooltipAreaLayout.addWidget(option_value2)
@@ -237,28 +262,6 @@ class App(QMainWindow):
 
         #
         self.selected_options_layout = FlowLayout()
-        # self.selected_options_layout.setAlignment()
-        # a = QPushButton('{} ❌'.format(1))
-        # a.setFlat(True)
-        # a.clicked.connect(lambda x: a.setParent(None))
-        #
-        # self.selected_options_layout.addWidget(a)
-        # a = QPushButton('{} ❌'.format(22))
-        # a.setFlat(True)
-        # self.selected_options_layout.addWidget(a)
-
-        self.selected_options_layout.addWidget(SelectedTitleButton(text='11234324342241'))
-        self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
-        self.selected_options_layout.addWidget(SelectedTitleButton(text='2324'))
-        self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
-        self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
-        self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
-        self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
-        self.selected_options_layout.addWidget(SelectedTitleButton(text='22asddfssfdfsdasfd'))
-        self.selected_options_layout.addWidget(SelectedTitleButton(text='342432123421431234'))#
-        self.selected_options_layout.addItem(QSpacerItem(20, 10, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))
-        # self.selected_options_widgets = QWidget()
-        # self.selected_options_widgets.setLayout(self.selected_options_layout)
 
         #
         self.nameLabel = QLabel('Search for something')
@@ -304,13 +307,16 @@ class App(QMainWindow):
 
         # Events
         self.search.textChanged.connect(self.searched)
-        self.search.returnPressed.connect(self.searched)
+        self.search.returnPressed.connect(self.ask_for_recoms)
+        self.search_button.clicked.connect(self.ask_for_recoms)
 
-        option_value1.mousePressEvent = lambda x: self.optionClicked(x, option_value1.objectName())
-        option_value2.mousePressEvent = lambda x: self.optionClicked(x, option_value2.objectName())
-        option_value3.mousePressEvent = lambda x: self.optionClicked(x, option_value3.objectName())
-        option_value4.mousePressEvent = lambda x: self.optionClicked(x, option_value4.objectName())
-        option_value5.mousePressEvent = lambda x: self.optionClicked(x, option_value5.objectName())
+        option_value1.clicked.connect(self.optionClicked)
+        option_value2.clicked.connect(self.optionClicked)
+        option_value3.clicked.connect(self.optionClicked)
+        option_value4.clicked.connect(self.optionClicked)
+        option_value5.clicked.connect(self.optionClicked)
+
+
 
     def searched(self):  # When something is typed in search bar
         # print(self.search.text())
@@ -324,7 +330,7 @@ class App(QMainWindow):
     def recevice_search_options(self, results):
         # It receives the search option and puts it in option box
         i = 0
-        print(results)
+        # print(results)
 
         for i in range(5):  # Clears/hides all the clikable labels
             self.optionWidget.children()[i + 1].hide()
@@ -334,12 +340,29 @@ class App(QMainWindow):
 
         for i in range(1, len(results) + 1):  # Creates new clickable labels
             self.optionWidget.children()[i].setText(results[i - 1][1])
-            self.optionWidget.children()[i].setObjectName(str(results[i - 1][0]))
             self.optionWidget.children()[i].show()
+            self.optionWidget.children()[i].title_id=results[i-1][0]
 
-    def optionClicked(self, event, object_name):  # if any clickable label is clicked
-        # print('clicked', object_name)
-        self.recommender.request([int(object_name)])
+            # self.optionWidget.children()[i].clicked.connect(self.optionClicked)
+            # self.optionWidget.children()[i].mousePressEvent = lambda x: self.optionClicked(x, self.optionWidget.children()[i])
+
+    def optionClicked(self):  # if any clickable label is clicked
+        title = self.sender().text()
+        id = self.sender().title_id
+        # print(title,id)
+
+        if id not in selected_titles_list:
+            self.selected_options_layout.addWidget(SelectedTitleButton(text=title, id=id))
+
+    def ask_for_recoms(self):
+        print(selected_titles_list)
+        if self.recom_movies.isChecked():
+            self.recommender.request(selected_titles_list, 'movie')
+        else:
+            self.recommender.request(selected_titles_list, 'series')
+
+        print([imdb['title'].iloc[id] for id in selected_titles_list])
+        pass
 
     @QtCore.pyqtSlot(list)
     def receive_recoms(self, recoms):

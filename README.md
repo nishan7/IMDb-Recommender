@@ -5,6 +5,8 @@ tv-series your like
 <ul>Gui interface to interact</ul>
 <ul>Recommended movies have link to google/imdb </ul>
 
+### Screenshot
+
 ##
 ```
 python gui.py
